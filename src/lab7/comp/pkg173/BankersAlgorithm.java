@@ -81,6 +81,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
         });
 
         resetButton.setText("Reset");
+        resetButton.setEnabled(false);
         resetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
@@ -156,6 +157,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
                 fileOpenedLabel.setText("File Opened: " + sFile);
                 runButton.setEnabled(true);
                 printButton.setEnabled(true);
+                resetButton.setEnabled(true);
             } catch (IOException ex) {
                 Logger.getLogger(BankersAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -167,7 +169,6 @@ public class BankersAlgorithm extends javax.swing.JFrame {
     }//GEN-LAST:event_printButtonActionPerformed
 
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
-        //resetValues();
         calculateNeed2();
     }//GEN-LAST:event_runButtonActionPerformed
 
@@ -176,6 +177,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
         textArea.append("Values Reset.\n");
         resetValues();
     }//GEN-LAST:event_resetButtonActionPerformed
+
 
     public void resetValues(){
          availableResourceList = new ArrayList<Integer>();
