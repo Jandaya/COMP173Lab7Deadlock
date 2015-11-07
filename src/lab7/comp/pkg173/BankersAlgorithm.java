@@ -186,6 +186,8 @@ public class BankersAlgorithm extends javax.swing.JFrame {
          NeedMatrix = new ArrayList<List<Integer>>();
          Line = new ArrayList<Integer>();
          RunningList = new ArrayList<Integer>();
+         ProcessesRemaining = 0;
+         DeadlockCount = 0;
         try {
                 // input in stuff
                 readFile(selectedFile);
@@ -244,11 +246,10 @@ public class BankersAlgorithm extends javax.swing.JFrame {
     
     public void initRunningProcesses(){
         RunningList = new ArrayList<Integer>();
-        for(int i = 0; i < numResourceTypes; i++){
+        for(int i = 0; i < numProcess; i++){
             RunningList.add(1);
             ProcessesRemaining++;
         }
-        ProcessesRemaining--;
     }
     
     public void calculateNeed2(){
@@ -268,7 +269,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
                                 temp2 = availableResourceList.get(i);
                             }
                             isSafe = false;
-                            textArea.append("\nUnsafe State occurred. Exited.\n");
+                            textArea.append("Unsafe State occurred. Exited.\n");
                             break;
                          }
 
@@ -283,9 +284,12 @@ public class BankersAlgorithm extends javax.swing.JFrame {
                         ProcessesRemaining--;
                         textArea.append("Number of processes remaining: " + ProcessesRemaining + "\n");
                         printResourceMatrix();
+                        textArea.append("\n");
                     }
                     else{
-                        textArea.append("Process " + (j+1) + " is placed on hold.\n");
+                        textArea.append("Process " + (j+1) + " is placed on hold.\n\n");
+                        
+                        isSafe = true;
                     }
                     isSafe = true;
                     LocalLine = new ArrayList<Integer>();
