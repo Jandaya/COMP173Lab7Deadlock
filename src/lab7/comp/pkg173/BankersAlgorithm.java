@@ -28,7 +28,11 @@ public class BankersAlgorithm extends javax.swing.JFrame {
     private List<Integer> availableResourceList = new ArrayList<Integer>();
     private List<List<Integer>> AllocationMatrix = new ArrayList<List<Integer>>();
     private List<List<Integer>> RequestMatrix = new ArrayList<List<Integer>>();
+    private List<List<Integer>> NeedMatrix = new ArrayList<List<Integer>>();
     private List<Integer> Line = new ArrayList<Integer>();
+    private List<Integer> RunningList = new ArrayList<Integer>();
+    private int ProcessesRemaining = 0;
+    private int DeadlockCount = 0;
 
     
     
@@ -49,6 +53,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         fileOpenedLabel = new javax.swing.JLabel();
         openFileButton = new javax.swing.JButton();
+        runButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
         printButton = new javax.swing.JButton();
@@ -64,6 +69,13 @@ public class BankersAlgorithm extends javax.swing.JFrame {
             }
         });
 
+        runButton.setText("Run");
+        runButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -71,9 +83,14 @@ public class BankersAlgorithm extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(fileOpenedLabel)
-                    .addComponent(openFileButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(fileOpenedLabel)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(openFileButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(runButton)
+                        .addGap(27, 27, 27))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -81,7 +98,9 @@ public class BankersAlgorithm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(fileOpenedLabel)
                 .addGap(18, 18, 18)
-                .addComponent(openFileButton)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(openFileButton)
+                    .addComponent(runButton))
                 .addContainerGap(34, Short.MAX_VALUE))
         );
 
@@ -130,7 +149,9 @@ public class BankersAlgorithm extends javax.swing.JFrame {
             try {
                 // input in stuff
                 readFile(selectedFile);
-                
+                calculateNeed();
+                initRunningProcesses();
+                fileOpenedLabel.setText("File Opened: " + sFile);
             } catch (IOException ex) {
                 Logger.getLogger(BankersAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -138,20 +159,30 @@ public class BankersAlgorithm extends javax.swing.JFrame {
     }//GEN-LAST:event_openFileButtonActionPerformed
 
     private void printButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printButtonActionPerformed
-        // TODO add your handling code here:
         printList();
     }//GEN-LAST:event_printButtonActionPerformed
 
+    private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
+        calculateNeed2();
+    }//GEN-LAST:event_runButtonActionPerformed
+
     public void printList(){
          List<Integer> LocalLine = new ArrayList<Integer>();
-        textArea.append(numProcess + "\n");
-        textArea.append(numResourceTypes + "\n");
+        textArea.append("Number of processes: " + numProcess + "\n");
+        textArea.append("Number of Resource Types: " + numResourceTypes + "\n");
+        textArea.append("Available resources: \n");
         for (int a = 0; a < numResourceTypes; a++ ){
             textArea.append(availableResourceList.get(a) + " ");
         }
         textArea.append("\n");
+        textArea.append("Allocation Matrix: \n");
         displayMatrix(AllocationMatrix);
+        textArea.append("Request Matrix: \n");
         displayMatrix(RequestMatrix);
+        textArea.append("Need Matrix: \n");
+        displayMatrix(NeedMatrix);
+        textArea.append("\n");
+
     }
     
     public void displayMatrix(List<List<Integer>> a){
@@ -164,6 +195,109 @@ public class BankersAlgorithm extends javax.swing.JFrame {
             textArea.append("\n");
             LocalLine = new ArrayList<Integer>();
         }
+    }
+    
+    public void calculateNeed(){
+        List<Integer> LocalLine = new ArrayList<Integer>();
+        int temp, temp2;
+        boolean isSafe = true;
+        for (int j = 0; j < numProcess; j++){
+            
+            for(int k = 0; k < numResourceTypes; k++){
+                 temp = RequestMatrix.get(j).get(k) - AllocationMatrix.get(j).get(k);
+                 LocalLine.add(temp);
+            }
+            NeedMatrix.add(LocalLine);
+            LocalLine = new ArrayList<Integer>();
+        }
+    }
+    
+    public void initRunningProcesses(){
+        for(int i = 0; i < numResourceTypes; i++){
+            RunningList.add(1);
+            ProcessesRemaining++;
+        }
+        ProcessesRemaining--;
+    }
+    
+    public void calculateNeed2(){
+        List<Integer> LocalLine = new ArrayList<Integer>();
+        int need, temp2;
+        boolean isSafe = true, allFinished = false;
+        while(!allFinished){
+            for (int j = 0; j < numProcess; j++){
+                if(RunningList.get(j) == 1){
+                    for(int k = 0; k < numResourceTypes; k++){
+                         need = RequestMatrix.get(j).get(k) - AllocationMatrix.get(j).get(k);
+                         if(need <= availableResourceList.get(k))
+                            LocalLine.add(AllocationMatrix.get(j).get(k));
+                         else{
+                            LocalLine = new ArrayList<Integer>();
+                            for(int i = 0; i < numResourceTypes; i++){
+                                temp2 = availableResourceList.get(i);
+                            }
+                            isSafe = false;
+                            textArea.append("\nUnsafe State occurred. Exited.\n");
+                            break;
+                         }
+
+                    }
+
+                    if(isSafe){
+                        textArea.append("Process " + (j+1) + " is Complete.\n");
+                        releaseResources(LocalLine);
+                        //process of index j is finished.
+                        RunningList.set(j, 0);
+                        // decrement amount of processes in queue
+                        ProcessesRemaining--;
+                        textArea.append("Number of processes remaining: " + ProcessesRemaining + "\n");
+                        printResourceMatrix();
+                    }
+                    else{
+                        textArea.append("Process " + (j+1) + " is placed on hold.\n");
+                    }
+                    isSafe = true;
+                    LocalLine = new ArrayList<Integer>();
+                }
+            }
+            DeadlockCount++;
+            if(ProcessesRemaining <= 0)
+                allFinished = true;
+            
+            // checks for a deadlock. basically if this loop never ends number set to relatively high iteration.
+            if(DeadlockCount >= 1000){
+                textArea.append("\nTimed out... deadlocks occurred.\n");
+                break;
+            }
+        }
+        if(allFinished){
+            textArea.append("\nAll processes completed. No deadlocks occurred.\n");
+        }
+    }
+    
+    public void grantResources(List<Integer> a){
+        int temp;
+        for (int i = 0; i < numResourceTypes; i++){
+            temp = availableResourceList.get(i);
+            availableResourceList.set(i, temp - a.get(i));
+        }
+    }
+    
+    public void releaseResources(List<Integer> a){
+        int temp;
+        for(int i = 0; i < numResourceTypes; i++){
+            temp = availableResourceList.get(i);
+            availableResourceList.set(i, temp + a.get(i));
+        }
+    }
+    
+    public void printResourceMatrix(){
+        int temp;
+        textArea.append("Available Resources: \n");
+        for(int i = 0; i < numResourceTypes; i++){
+            textArea.append(availableResourceList.get(i) + " ");
+        }
+        textArea.append("\n");
     }
     
     public void readFile(File Selected)throws IOException{
@@ -249,6 +383,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton openFileButton;
     private javax.swing.JButton printButton;
+    private javax.swing.JButton runButton;
     private javax.swing.JTextArea textArea;
     // End of variables declaration//GEN-END:variables
 }
