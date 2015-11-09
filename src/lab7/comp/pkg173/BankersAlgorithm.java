@@ -72,7 +72,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
             }
         });
 
-        printButton.setText("Print");
+        printButton.setText("Print Input");
         printButton.setEnabled(false);
         printButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -98,13 +98,15 @@ public class BankersAlgorithm extends javax.swing.JFrame {
                     .addComponent(fileOpenedLabel)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(openFileButton)
-                        .addGap(18, 18, 18)
-                        .addComponent(runButton)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(printButton)
                         .addGap(18, 18, 18)
-                        .addComponent(resetButton)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(runButton)))
+                .addContainerGap(239, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(resetButton)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -115,9 +117,9 @@ public class BankersAlgorithm extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(openFileButton)
                     .addComponent(runButton)
-                    .addComponent(printButton)
-                    .addComponent(resetButton))
-                .addContainerGap(40, Short.MAX_VALUE))
+                    .addComponent(printButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+                .addComponent(resetButton))
         );
 
         textArea.setColumns(20);
