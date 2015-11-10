@@ -149,6 +149,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
         // gets the file to read from the filechooser
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
+            resetValues();
             // clear the list for new file
             selectedFile  = fc.getSelectedFile();
             sFile = selectedFile.toString();
@@ -184,6 +185,14 @@ public class BankersAlgorithm extends javax.swing.JFrame {
         textArea.setText("");
         textArea.append("Values Reset.\n");
         resetValues();
+        try {
+                // input in stuff
+                readFile(selectedFile);
+                calculateNeed();
+                initRunningProcesses();
+            } catch (IOException ex) {
+                Logger.getLogger(BankersAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }//GEN-LAST:event_resetButtonActionPerformed
 
 
@@ -196,6 +205,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
          RunningList = new ArrayList<Integer>();
          ProcessesRemaining = 0;
          DeadlockCount = 0;
+         /*
         try {
                 // input in stuff
                 readFile(selectedFile);
@@ -204,7 +214,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(BankersAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
+        */
     }
     public void printList(){
          List<Integer> LocalLine = new ArrayList<Integer>();
