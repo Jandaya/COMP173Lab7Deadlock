@@ -275,6 +275,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
         List<Integer> LocalLine = new ArrayList<Integer>();
         int need, temp2;
         boolean isSafe = true, allFinished = false;
+        boolean loopCheck = true;
         // similar to algorithm provided in link above
         // so long as each process is not finished stay in loop
         while(!allFinished){
@@ -307,11 +308,20 @@ public class BankersAlgorithm extends javax.swing.JFrame {
                         textArea.append("Number of processes remaining: " + ProcessesRemaining + "\n");
                         printResourceMatrix();
                         textArea.append("\n");
+                        // this is a check designed so that the next process will run, then reset to try any processes
+                        // that were put on hold
+                        if(loopCheck == false){
+                            loopCheck = true;
+                            j = 0;
+                        }
+                        
                     }
                     else{
                         //places the process on hold and allows the next process to run through
                         textArea.append("Process " + (j+1) + " is placed on hold.\n\n");
                         isSafe = true;
+                        loopCheck = false;
+                        //j = 0;
                     }
                     isSafe = true;
                     LocalLine = new ArrayList<Integer>();
