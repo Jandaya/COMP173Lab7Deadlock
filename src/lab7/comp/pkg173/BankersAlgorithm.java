@@ -146,6 +146,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
 
     private void openFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openFileButtonActionPerformed
         int returnVal = fc.showOpenDialog(null);
+        // gets the file to read from the filechooser
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             // clear the list for new file
@@ -154,8 +155,11 @@ public class BankersAlgorithm extends javax.swing.JFrame {
             try {
                 // input in stuff
                 readFile(selectedFile);
+                // calculate the need matrix
                 calculateNeed();
+                // initialize the running processes
                 initRunningProcesses();
+                // display the opened file to user, and set all buttons to ready.
                 fileOpenedLabel.setText("File Opened: " + sFile);
                 runButton.setEnabled(true);
                 printButton.setEnabled(true);
@@ -167,11 +171,13 @@ public class BankersAlgorithm extends javax.swing.JFrame {
     }//GEN-LAST:event_openFileButtonActionPerformed
 
     private void printButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printButtonActionPerformed
+        // display what has been loaded to the program
         printList();
     }//GEN-LAST:event_printButtonActionPerformed
 
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
-        calculateNeed2();
+        // run the simulation
+        runSimulation();
     }//GEN-LAST:event_runButtonActionPerformed
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
@@ -248,35 +254,39 @@ public class BankersAlgorithm extends javax.swing.JFrame {
     
     public void initRunningProcesses(){
         RunningList = new ArrayList<Integer>();
+        // creates a list of the available running process 1 means they need jobs to finish 0 means they have completed.
         for(int i = 0; i < numProcess; i++){
             RunningList.add(1);
             ProcessesRemaining++;
         }
     }
     
-    public void calculateNeed2(){
+    public void runSimulation(){
         List<Integer> LocalLine = new ArrayList<Integer>();
         int need, temp2;
         boolean isSafe = true, allFinished = false;
+        // similar to algorithm provided in link above
+        // so long as each process is not finished stay in loop
         while(!allFinished){
             for (int j = 0; j < numProcess; j++){
+                // so long as the process has jobs to finish, continue.
                 if(RunningList.get(j) == 1){
                     for(int k = 0; k < numResourceTypes; k++){
+                        // calculate if the amount of each resource they need, and check if it will give them a safe state
                          need = RequestMatrix.get(j).get(k) - AllocationMatrix.get(j).get(k);
+                         // so long as it is safe to give the resources add the element to a local line that will be pushed to a list of lists
                          if(need <= availableResourceList.get(k))
                             LocalLine.add(AllocationMatrix.get(j).get(k));
                          else{
-                            LocalLine = new ArrayList<Integer>();
-                            for(int i = 0; i < numResourceTypes; i++){
-                                temp2 = availableResourceList.get(i);
-                            }
+                            // this tells the loop that we are now in an unsafe state, and that the process will not be allowed to get the resources
                             isSafe = false;
                             textArea.append("Unsafe State occurred. Exited.\n");
                             break;
                          }
 
                     }
-
+                    // so long as it is safe, the process will get all the resources needed, 
+                    // complete it's job, and return the resources back to the main
                     if(isSafe){
                         textArea.append("Process " + (j+1) + " is Complete.\n");
                         releaseResources(LocalLine);
@@ -289,15 +299,19 @@ public class BankersAlgorithm extends javax.swing.JFrame {
                         textArea.append("\n");
                     }
                     else{
+                        //places the process on hold and allows the next process to run through
                         textArea.append("Process " + (j+1) + " is placed on hold.\n\n");
-                        
                         isSafe = true;
                     }
                     isSafe = true;
                     LocalLine = new ArrayList<Integer>();
                 }
             }
+            // deadlock count is used just in case we get stuck into an infinite loop
+            // deadlockCount's check is set to 1000 so that 1000 iterations will be needed 
+            // to determine if this is an infinite loop.
             DeadlockCount++;
+            // if all the count of the remaining process is 0 then we are all finished
             if(ProcessesRemaining <= 0)
                 allFinished = true;
             
@@ -307,11 +321,13 @@ public class BankersAlgorithm extends javax.swing.JFrame {
                 break;
             }
         }
+        // provides a final verdict that all processes have finished
         if(allFinished){
             textArea.append("\nAll processes completed. No deadlocks occurred.\n");
         }
     }
     
+    // give the resources to the process asking
     public void grantResources(List<Integer> a){
         int temp;
         for (int i = 0; i < numResourceTypes; i++){
@@ -319,7 +335,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
             availableResourceList.set(i, temp - a.get(i));
         }
     }
-    
+    // release the resources back to the List.
     public void releaseResources(List<Integer> a){
         int temp;
         for(int i = 0; i < numResourceTypes; i++){
@@ -328,6 +344,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
         }
     }
     
+    // display the a resource matrix
     public void printResourceMatrix(){
         int temp;
         textArea.append("Available Resources: \n");
@@ -337,6 +354,8 @@ public class BankersAlgorithm extends javax.swing.JFrame {
         textArea.append("\n");
     }
     
+    
+    // algorithm for reading the file, specific to the instructions of the lab.
     public void readFile(File Selected)throws IOException{
         Scanner scan = new Scanner(selectedFile);
         int count1 = 0;
