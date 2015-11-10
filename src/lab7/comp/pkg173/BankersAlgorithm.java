@@ -284,9 +284,9 @@ public class BankersAlgorithm extends javax.swing.JFrame {
                 if(RunningList.get(j) == 1){
                     for(int k = 0; k < numResourceTypes; k++){
                         // calculate if the amount of each resource they need, and check if it will give them a safe state
-                         need = RequestMatrix.get(j).get(k) - AllocationMatrix.get(j).get(k);
+                        // need = RequestMatrix.get(j).get(k) - AllocationMatrix.get(j).get(k);
                          // so long as it is safe to give the resources add the element to a local line that will be pushed to a list of lists
-                         if(need <= availableResourceList.get(k))
+                         if(RequestMatrix.get(j).get(k) <= availableResourceList.get(k))
                             LocalLine.add(AllocationMatrix.get(j).get(k));
                          else{
                             // this tells the loop that we are now in an unsafe state, and that the process will not be allowed to get the resources
