@@ -338,6 +338,7 @@ public class BankersAlgorithm extends javax.swing.JFrame {
             // checks for a deadlock. basically if this loop never ends number set to relatively high iteration.
             if(DeadlockCount >= 1000){
                 textArea.append("\nTimed out... deadlocks occurred.\n");
+                displayLeftOverProcesses(RunningList);
                 break;
             }
         }
@@ -361,6 +362,15 @@ public class BankersAlgorithm extends javax.swing.JFrame {
         for(int i = 0; i < numResourceTypes; i++){
             temp = availableResourceList.get(i);
             availableResourceList.set(i, temp + a.get(i));
+        }
+    }
+    
+    public void displayLeftOverProcesses(List<Integer> alist ){
+                textArea.append("\nProcesses Left over: ");
+        for(int i = 0; i < numProcess; i++){
+            if(alist.get(i) == 1){
+                textArea.append("\nProcess " + (i+1));
+            }
         }
     }
     
